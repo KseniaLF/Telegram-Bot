@@ -8,15 +8,16 @@ const BOT_TOKEN = process.env.BOT_TOKEN || "";
 const bot = new Bot(BOT_TOKEN);
 
 async function getCitiesFromWebsite(): Promise<string[]> {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
 
-  await page.goto(
-    "https://geography.fandom.com/ru/wiki/Список_городов_Украины",
-    {
-      waitUntil: "domcontentloaded",
-    }
-  );
+  const url = "https://geography.fandom.com/ru/wiki/Список_городов_Украины";
+  await page.goto(url, {
+    waitUntil: "domcontentloaded",
+  });
 
   const cities = await page.$$eval(".mw-parser-output tbody tr", (rows) => {
     return rows
